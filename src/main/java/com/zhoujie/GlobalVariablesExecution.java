@@ -1,5 +1,7 @@
 package com.zhoujie;
 
+import org.apache.hadoop.util.ToolRunner;
+
 import java.io.File;
 import java.io.FileOutputStream;
 import java.io.OutputStream;
@@ -36,8 +38,13 @@ public class GlobalVariablesExecution extends OozieMainBase {
       OutputStream os = new FileOutputStream(propFile);
       props.store(os, "");
       os.close();
-    } else
+    } else {
       throw new RuntimeException(OOZIE_ACTION_OUTPUT_PROPERTIES
               + " System property not defined");
+    }
+  }
+
+  public static void main(String[] args) throws Exception {
+    ToolRunner.run(new GlobalVariablesExecution(), args);
   }
 }
