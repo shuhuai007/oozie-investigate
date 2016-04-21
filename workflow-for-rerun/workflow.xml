@@ -1,0 +1,45 @@
+<workflow-app xmlns="uri:oozie:workflow:0.4" name="oozie-investigate-wf">
+    <start to="java-node"/>
+    <action name="java-node">
+        <java>
+            <job-tracker>${jobTracker}</job-tracker>
+            <name-node>${nameNode}</name-node>
+            <configuration>
+                <property>
+                    <name>mapred.job.queue.name</name>
+                    <value>${queueName}</value>
+                </property>
+            </configuration>
+            <main-class>com.zhoujie.GlobalVariablesExecution</main-class>
+            <capture-output/>
+        </java>
+        <ok to="hive2-user-add-node"/>
+        <error to="fail"/>
+    </action>
+
+    <action name="hive2-user-add-node">
+        <hive2 xmlns="uri:oozie:hive2-action:0.1">
+            <job-tracker>${jobTracker}</job-tracker>
+            <name-node>${nameNode}</name-node>
+            <configuration>
+                <property>
+                    <name>mapred.job.queue.name</name>
+                    <value>${queueName}</value>
+                </property>
+            </configuration>
+            <jdbc-url>${jdbcURL}</jdbc-url>
+            <script>script/hive/test.q</script>
+            <param>INPUT=/user/flume/project/test_user_table</param>
+            <param>STARTTIME=${wf:actionData('java-node')['0daysago']}</param>
+            <param>ENDTIME=${wf:actionData('java-node')['1daysago']}</param>
+            <param>USER_AGREE_NUM=${wf:actionData('java-node')['user_agree_num']}</param>
+        </hive2>
+        <ok to="end"/>
+        <error to="fail"/>
+    </action>
+
+    <kill name="fail">
+        <message>action failed, error message[${wf:errorMessage(wf:lastErrorNode())}]</message>
+    </kill>
+    <end name="end"/>
+</workflow-app>
