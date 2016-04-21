@@ -1,6 +1,6 @@
 <workflow-app xmlns="uri:oozie:workflow:0.4" name="oozie-investigate-wf">
-    <start to="java-node"/>
-    <action name="java-node">
+    <start to="node1"/>
+    <action name="node1">
         <java>
             <job-tracker>${jobTracker}</job-tracker>
             <name-node>${nameNode}</name-node>
@@ -13,11 +13,11 @@
             <main-class>com.zhoujie.GlobalVariablesExecution</main-class>
             <capture-output/>
         </java>
-        <ok to="hive2-user-add-node"/>
+        <ok to="node2"/>
         <error to="fail"/>
     </action>
 
-    <action name="hive2-user-add-node">
+    <action name="node2">
         <hive2 xmlns="uri:oozie:hive2-action:0.1">
             <job-tracker>${jobTracker}</job-tracker>
             <name-node>${nameNode}</name-node>
@@ -34,6 +34,42 @@
             <param>ENDTIME=${wf:actionData('java-node')['1daysago']}</param>
             <param>USER_AGREE_NUM=${wf:actionData('java-node')['user_agree_num']}</param>
         </hive2>
+        <ok to="node3"/>
+        <error to="fail"/>
+    </action>
+
+    <action name="node3">
+        <shell xmlns="uri:oozie:shell-action:0.2">
+            <job-tracker>${jobTracker}</job-tracker>
+            <name-node>${nameNode}</name-node>
+            <configuration>
+                <property>
+                    <name>mapred.job.queue.name</name>
+                    <value>${queueName}</value>
+                </property>
+            </configuration>
+            <exec>echo</exec>
+            <argument>my_output=Hello Oozie</argument>
+            <capture-output/>
+        </shell>
+        <ok to="node4"/>
+        <error to="fail"/>
+    </action>
+
+    <action name="node4">
+        <shell xmlns="uri:oozie:shell-action:0.2">
+            <job-tracker>${jobTracker}</job-tracker>
+            <name-node>${nameNode}</name-node>
+            <configuration>
+                <property>
+                    <name>mapred.job.queue.name</name>
+                    <value>${queueName}</value>
+                </property>
+            </configuration>
+            <exec>echo</exec>
+            <argument>my_output=Hello Oozie</argument>
+            <capture-output/>
+        </shell>
         <ok to="end"/>
         <error to="fail"/>
     </action>
