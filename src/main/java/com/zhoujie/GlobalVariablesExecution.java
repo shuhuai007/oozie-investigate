@@ -49,7 +49,7 @@ public class GlobalVariablesExecution extends OozieMainBase {
             os.close();
         } else {
             throw new RuntimeException(OOZIE_ACTION_OUTPUT_PROPERTIES
-                    + " System property not defined");
+                    + " System p`roperty not defined");
         }
     }
 
